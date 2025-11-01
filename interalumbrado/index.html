@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Consorcio Interalumbrado de Cúcuta</title>
+
+  <!-- SEO / meta -->
+  <meta name="description" content="Interventoría del servicio de alumbrado público en San José de Cúcuta. Supervisión técnica, financiera y administrativa.">
+  <meta name="keywords" content="alumbrado público, interventoría, Cúcuta, Consorcio Interalumbrado, supervisión">
+  <meta name="author" content="Consorcio Interalumbrado de Cúcuta">
+
+  <link rel="stylesheet" href="style/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="img/Logo.jpg" alt="Consorcio Interalumbrado de Cúcuta" class="logo">
+        <div class="brand-text">
+          <h1>Consorcio Interalumbrado de Cúcuta</h1>
+          <p class="tagline">Interventoría — Supervisión del servicio de alumbrado público</p>
+        </div>
+      </div>
+
+      <button id="menu-toggle" class="hamburguesa" aria-label="Abrir menú">☰</button>
+    </div>
+
+    <nav class="nav" id="main-nav" aria-label="Menú principal">
+      <ul class="menu">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="noticias.html">Noticias</a></li>
+        <li><a href="proyectos.html">Proyectos</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero / Carrusel -->
+    <section class="hero">
+      <div class="carousel" aria-roledescription="carrusel">
+        <button class="carousel-btn prev" id="btn-prev" aria-label="Slide anterior">❮</button>
+        <div class="carousel-track" id="carousel-track" aria-live="polite">
+          <!-- loading="lazy" para mejorar tiempos de carga -->
+          <div class="slide"><img src="img/galeria1.jpg" alt="Instalación LED 1" data-index="0" loading="lazy"></div>
+          <div class="slide"><img src="img/galeria2.jpg" alt="Instalación LED 2" data-index="1" loading="lazy"></div>
+          <div class="slide"><img src="img/galeria3.jpg" alt="Instalación LED 3" data-index="2" loading="lazy"></div>
+          <div class="slide"><img src="img/galeria4.png" alt="Instalación LED 4" data-index="3" loading="lazy"></div>
+          <div class="slide"><img src="img/galeria5.png" alt="Instalación LED 5" data-index="4" loading="lazy"></div>
+          <div class="slide"><img src="img/galeria6.png" alt="Instalación LED 6" data-index="5" loading="lazy"></div>
+        </div>
+        <button class="carousel-btn next" id="btn-next" aria-label="Slide siguiente">❯</button>
+      </div>
+      <div class="carousel-dots" id="carousel-dots" aria-hidden="true"></div>
+    </section>
+
+    <!-- Sobre Nosotros (ancla) -->
+    <section id="que-es" class="card card--featured">
+      <h2>¿Qué es la Interventoría?</h2>
+      <p>La interventoría del servicio de alumbrado público supervisa la ejecución del contrato de concesión para la operación, administración, mantenimiento, modernización, reposición y expansión del sistema de alumbrado público en San José de Cúcuta. Garantiza el cumplimiento técnico, financiero y administrativo, velando por la calidad y seguridad del servicio.</p>
+    </section>
+
+    <section id="contrato" class="card">
+      <h2>Contrato de Concesión</h2>
+      <ul>
+        <li><strong>Número:</strong> 2643 de 2016</li>
+        <li><strong>Objeto:</strong> Concesión para operación, administración, mantenimiento, modernización, reposición y expansión del sistema de alumbrado público.</li>
+        <li><strong>Plazo:</strong> 30 años (inicio: 01 de enero de 2018)</li>
+        <li><strong>Empresas:</strong> AGM Desarrollos S.A.S. (60%) y American Lighting S.A.S. (40%)</li>
+        <li><strong>Inversión modernización:</strong> 49.916 unidades LED instaladas. Valor reportado: $91.373.708.482</li>
+      </ul>
+    </section>
+
+    <section id="funciones" class="card">
+      <h2>Funciones de la Interventoría</h2>
+      <ul>
+        <li>Supervisión técnica, financiera y administrativa del cumplimiento contractual.</li>
+        <li>Control de calidad de la iluminación pública.</li>
+        <li>Gestión y seguimiento de reportes ciudadanos.</li>
+        <li>Garantía del cumplimiento de estándares de seguridad.</li>
+      </ul>
+    </section>
+
+    <!-- Resultados / Impacto -->
+    <section class="card">
+      <h2>Resultados</h2>
+      <p>En la etapa de modernización se instalaron 49.916 unidades LED entre el 15 de enero y el 24 de agosto de 2018, cumpliendo la etapa de inversión en su totalidad. Actualmente el concesionario realiza labores de Administración, Operación y Mantenimiento (AOM).</p>
+    </section>
+
+    <!-- Comentarios y contacto rápido -->
+    <section id="comentarios" class="card">
+      <h2>Contacto y Comentarios</h2>
+      <p>¿Deseas reportar una avería, hacer una consulta o dejar una calificación? Usa el formulario: el comentario aparecerá en la página y también llegará por correo (Formspree).</p>
+
+      <form id="comentariosForm" action="https://formspree.io/f/xnnbyrdk" method="POST" class="form-contact">
+        <div class="form-row">
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+          <input type="email" id="correo" name="correo" placeholder="Tu correo" required>
+        </div>
+        <textarea id="comentario" name="comentario" rows="4" placeholder="Escribe tu comentario" required></textarea>
+
+        <label for="calificacion">Calificación:</label>
+        <select id="calificacion" name="calificacion">
+          <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+          <option value="4">⭐⭐⭐⭐ Muy bueno</option>
+          <option value="3">⭐⭐⭐ Bueno</option>
+          <option value="2">⭐⭐ Regular</option>
+          <option value="1">⭐ Deficiente</option>
+        </select>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Enviar comentario</button>
+          <a class="btn-whatsapp" href="https://wa.me/573164883530" target="_blank" rel="noopener">Solicitar más información</a>
+        </div>
+      </form>
+
+      <div class="comentarios-list" id="lista-comentarios">
+        <h3>Comentarios recientes</h3>
+        <div id="comentariosGuardados"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Consorcio Interalumbrado de Cúcuta</h4>
+        <p>Avenida 0A No. 12-05 · Edificio Ingrid - Oficina 207<br>
+           San José de Cúcuta - Norte de Santander</p>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <p>Email: <a href="mailto:consorcio.cucuta@gmail.com">consorcio.cucuta@gmail.com</a><br>
+        Tel: (7) 549 0891 · Cel: +57 314 237 1133</p>
+      </div>
+      <div class="footer-col">
+        <h4>Certificación</h4>
+        <p>Contrato de Concesión No. 2643 de 2016 · Inicio: 01-01-2018</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Consorcio Interalumbrado de Cúcuta — Interventoría</p>
+    </div>
+  </footer>
+
+  <!-- Modal / Lightbox -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar">✕</button>
+    <button class="lightbox-prev" id="lightbox-prev" aria-label="Anterior">❮</button>
+    <div class="lightbox-content">
+      <img id="lightbox-image" src="" alt="">
+      <p id="lightbox-caption"></p>
+    </div>
+    <button class="lightbox-next" id="lightbox-next" aria-label="Siguiente">❯</button>
+  </div>
+
+  <!-- Scripts (defer para mejor performance) -->
+  <script src="js/galeria-carousel.js" defer></script>
+  <script src="js/comentarios-interactivos.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/menu-activo.js" defer></script>
+</body>
+</html>
