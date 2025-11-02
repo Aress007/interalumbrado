@@ -54,9 +54,9 @@ body {
   padding: 12px 20px;
 }
 
-.brand { display:flex; align-items:center; gap:16px; }
+.brand { display:flex; align-items:center; gap:20px; }
 .logo { width:130px; border-radius:8px; display:block; }
-.brand-text h1 { margin:0; font-size:1.05rem; font-weight:700; }
+.brand-text h1 { margin:0; font: size 1.1em; font-weight:700; }
 .brand-text .tagline { margin:0; font-size:0.85rem; color: rgba(255,255,255,0.9); }
 
 /* Hamburguesa (mobile) */
