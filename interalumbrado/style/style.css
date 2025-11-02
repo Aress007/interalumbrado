@@ -179,11 +179,11 @@ input[type="text"], input[type="email"], textarea, select {
 }
 .btn-primary {
   background: linear-gradient(180deg,var(--azul-medio), var(--azul-oscuro)); color:#fff;
-  padding:10px 14px; border:none; border-radius:8px; cursor:pointer; font-weight:700;
+  padding:15px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:700;
 }
 .btn-whatsapp, .btn-formulario {
   display:inline-block; text-decoration:none; color:#fff; background:var(--whatsapp);
-  padding:10px 12px; border-radius:8px; font-weight:700;
+  padding:10px 14px; border-radius:8px; font-weight:700;
 }
 .form-actions { display:flex; gap:12px; align-items:center; }
 

@@ -3,7 +3,7 @@
 Proyecto web informativo desarrollado como evidencia de etapa productiva SENA.  
 Este sitio presenta la información institucional, noticias, proyectos y canales de contacto del **Consorcio Interalumbrado de Cúcuta**, interventoría encargada de la supervisión del servicio de alumbrado público de la ciudad.
 
-🔗 Sitio en línea: https://interalumbrado.netlify.app
+🔗 Sitio en línea: https://consorcio-interalumbrado.netlify.app/
 
 ---
 ## 🧩 Tecnologías utilizadas
@@ -34,25 +34,18 @@ Este sitio presenta la información institucional, noticias, proyectos y canales
 │ ├── main.js
 │ └── menu-activo.js
 │
-├── img/
-│ ├── Logo.jpg
-│ ├── galeria1.jpg
-│ ├── galeria2.jpg
-│ ├── galeria3.jpg
-│ ├── galeria4.png
-│ ├── galeria5.png
-│ └── galeria6.png
+├── img/...
 │
 └── README.md
 
 ---
 ## 🧠 Funcionalidades principales
-# Función	Descripción
-Carrusel automático	Presenta imágenes del proyecto con desplazamiento cada 4 segundos y botones de navegación.
-Menú hamburguesa	Permite navegación adaptable en móviles.
-Sistema de comentarios	Los usuarios pueden dejar opiniones y calificaciones; se guardan y muestran dinámicamente.
-Formulario de contacto	Envío directo a través de Formspree.
-Lightbox de galería	Permite ampliar las imágenes al hacer clic.
+# Función	            # Descripción
+Carrusel automático	   | Presenta imágenes del proyecto con desplazamiento cada 4 segundos y botones de navegación.
+Menú hamburguesa	   | Permite navegación adaptable en móviles.
+Sistema de comentarios | Los usuarios pueden dejar opiniones y calificaciones; se guardan y muestran dinámicamente.
+Formulario de contacto | Envío directo a través de Formspree.
+Lightbox de galería	   | Permite ampliar las imágenes al hacer clic.
 
 ## 📋 Responsividad
 El diseño está optimizado para:
@@ -82,15 +75,15 @@ bsalamanca@sena.edu.co - johanna.salamancab@gmail.com
 Consorcio Interalumbrado de Cúcuta
 Cúcuta, Norte de Santander, Colombia
 
-📦 Licencia
+## 📦 Licencia
 Este proyecto se entrega bajo licencia educativa, con fines formativos y demostrativos del proceso de desarrollo web.
 No se permite su reproducción o uso comercial sin autorización previa.
 
-🧩 Versión actual
+# 🧩 Versión actual
 Versión: 1.0.0
 
-Última actualización: 1 Noviembre 2025
+# Última actualización: 1 Noviembre 2025
 
-Estado: En desarrollo
+# Estado: En desarrollo
 
 
