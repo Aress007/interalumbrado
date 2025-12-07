@@ -6,191 +6,489 @@
   <title>Panel Admin - Interalumbrado</title>
   <link rel="stylesheet" href="style/style.css">
   <style>
-    .admin-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .admin-header { background: #003366; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-    .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-    .stat-number { font-size: 2rem; font-weight: bold; color: #003366; }
-    #solicitudes-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    #solicitudes-table th { background: #003366; color: white; padding: 12px; text-align: left; }
-    #solicitudes-table td { padding: 10px; border-bottom: 1px solid #ddd; }
-    .ticket-badge { background: #0051a2; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.9rem; }
-    .btn-refresh { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+    body { background: #f5f7fa; }
+    .admin-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+    .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,51,102,0.1); text-align: center; }
+    .login-box h2 { color: #003366; margin-bottom: 30px; }
+    .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+    .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #003366, #0051a2); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .login-btn:hover { background: linear-gradient(135deg, #0051a2, #003366); }
+    .admin-header { background: linear-gradient(135deg, #003366, #0051a2); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; transition: transform 0.3s; }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-number { font-size: 2.5rem; font-weight: bold; color: #003366; margin-bottom: 10px; }
+    .stat-label { color: #666; font-size: 0.9rem; }
+    #solicitudes-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+    #solicitudes-table th { background: #003366; color: white; padding: 15px; text-align: left; font-weight: 600; }
+    #solicitudes-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+    #solicitudes-table tr:hover { background: #f8f9fa; }
+    .ticket-badge { background: #0051a2; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    .btn-admin { background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-admin:hover { background: #218838; }
+    .btn-logout { background: #dc3545; }
+    .btn-logout:hover { background: #c82333; }
+    .admin-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .status-pendiente { color: #ffc107; font-weight: 600; }
+    .status-atendido { color: #28a745; font-weight: 600; }
+    .hidden { display: none; }
+    .error-message { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand">
-        <img src="img/Logo.jpg" alt="Logo" class="logo">
-        <div class="brand-text">
-          <h1>Panel de Administración</h1>
-          <p class="tagline">Consorcio Interalumbrado de Cúcuta</p>
+  <!-- PANTALLA DE LOGIN (visible inicialmente) -->
+  <div id="loginScreen" class="login-box">
+    <img src="img/Logo.jpg" alt="Logo" style="width: 100px; border-radius: 8px; margin-bottom: 20px;">
+    <h2>🔐 Panel de Administración</h2>
+    <p style="color: #666; margin-bottom: 25px;">Consorcio Interalumbrado de Cúcuta</p>
+    
+    <div id="loginError" class="error-message hidden"></div>
+    
+    <input type="password" id="adminPassword" class="login-input" placeholder="Ingrese la contraseña" autocomplete="off">
+    <button onclick="verificarLogin()" class="login-btn">Ingresar al Panel</button>
+    
+    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+      <p style="color: #666; font-size: 0.9rem;">
+        Para recuperar la contraseña, contacte al desarrollador.<br>
+        <small>Acceso restringido al personal autorizado.</small>
+      </p>
+    </div>
+  </div>
+
+  <!-- PANEL ADMINISTRATIVO (oculto inicialmente) -->
+  <div id="adminPanel" class="hidden">
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand">
+          <img src="img/Logo.jpg" alt="Logo" class="logo">
+          <div class="brand-text">
+            <h1>Panel de Administración</h1>
+            <p class="tagline">Consorcio Interalumbrado de Cúcuta</p>
+          </div>
+        </div>
+        <div>
+          <button onclick="logout()" class="btn-admin btn-logout">🚪 Cerrar Sesión</button>
         </div>
       </div>
-      <button id="menu-toggle" class="hamburguesa">☰</button>
-    </div>
-  </header>
+    </header>
 
-  <main class="admin-container">
-    <div class="admin-header">
-      <h2>📊 Dashboard de Solicitudes</h2>
-      <p>Visualización de solicitudes recibidas a través del formulario web</p>
-    </div>
+    <main class="admin-container">
+      <div class="admin-header">
+        <h2 style="margin: 0 0 10px 0;">📊 Dashboard de Solicitudes</h2>
+        <p style="margin: 0; opacity: 0.9;">Visualización y gestión de solicitudes recibidas</p>
+      </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number" id="total-solicitudes">0</div>
-        <div>Total Solicitudes</div>
+      <div class="admin-actions">
+        <button onclick="cargarSolicitudes()" class="btn-admin">🔄 Actualizar Datos</button>
+        <a href="https://docs.google.com/spreadsheets/d/1xfq-c7OGWUhAZGR4KFbqSiBlRm1Epos7oLpWJ2dpPKs/edit" 
+           target="_blank" 
+           class="btn-admin" style="background: #4285f4; text-decoration: none;">
+          📊 Ver en Google Sheets
+        </a>
+        <a href="contacto.html" 
+           class="btn-admin" style="background: #6f42c1; text-decoration: none;">
+          📝 Ir al Formulario
+        </a>
+        <button onclick="exportarDatos()" class="btn-admin" style="background: #17a2b8;">📥 Exportar Datos</button>
       </div>
-      <div class="stat-card">
-        <div class="stat-number" id="solicitudes-hoy">0</div>
-        <div>Solicitudes Hoy</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="reportes">0</div>
-        <div>Reportes de Avería</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="consultas">0</div>
-        <div>Consultas</div>
-      </div>
-    </div>
 
-    <div style="margin-bottom: 20px;">
-      <button class="btn-refresh" onclick="cargarSolicitudes()">
-        🔄 Actualizar Datos
-      </button>
-      <a href="https://docs.google.com/spreadsheets/d/1xfq-c7OGWUhAZGR4KFbqSiBlRm1Epos7oLpWJ2dpPKs/edit" 
-         target="_blank" 
-         style="margin-left: 10px; padding: 10px 15px; background: #4285f4; color: white; text-decoration: none; border-radius: 5px;">
-        📊 Ver en Google Sheets
-      </a>
-    </div>
-
-    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-      <h3>📋 Últimas Solicitudes</h3>
-      <table id="solicitudes-table">
-        <thead>
-          <tr>
-            <th>Ticket</th>
-            <th>Fecha</th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="solicitudes-body">
-          <!-- Datos cargados por JavaScript -->
-        </tbody>
-      </table>
-      <div id="loading" style="text-align: center; padding: 20px;">
-        ⏳ Cargando datos...
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="total-solicitudes">0</div>
+          <div class="stat-label">Total Solicitudes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="solicitudes-hoy">0</div>
+          <div class="stat-label">Solicitudes Hoy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="reportes">0</div>
+          <div class="stat-label">Reportes de Avería</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="consultas">0</div>
+          <div class="stat-label">Consultas Generales</div>
+        </div>
       </div>
-      <div id="no-data" style="display: none; text-align: center; padding: 20px; color: #666;">
-        No hay solicitudes registradas aún.
-      </div>
-    </div>
 
-    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-      <h3>📝 Instrucciones para el administrador:</h3>
-      <ul>
-        <li>Las solicitudes se guardan automáticamente en <a href="https://docs.google.com/spreadsheets/d/1xfq-c7OGWUhAZGR4KFbqSiBlRm1Epos7oLpWJ2dpPKs/edit" target="_blank">Google Sheets</a></li>
-        <li>Cada solicitud genera un correo a: <strong>consorcio.cucuta@gmail.com</strong></li>
-        <li>Usa el botón "Actualizar Datos" para ver nuevas solicitudes</li>
-        <li>Para editar contenido del sitio, contactar al desarrollador</li>
-      </ul>
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-col">
-        <h4>Panel de Administración</h4>
-        <p>Versión 1.0 · Solo para uso interno</p>
+      <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+        <h3 style="margin-top: 0; color: #003366;">📋 Últimas Solicitudes (Máximo 15)</h3>
+        
+        <div id="loading" style="text-align: center; padding: 40px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
+          <p>Cargando datos de solicitudes...</p>
+        </div>
+        
+        <div id="no-data" class="hidden" style="text-align: center; padding: 40px; color: #666;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">📭</div>
+          <p>No hay solicitudes registradas aún.</p>
+          <p><small>Los datos aparecerán cuando se envíen formularios desde el sitio web.</small></p>
+        </div>
+        
+        <table id="solicitudes-table" class="hidden">
+          <thead>
+            <tr>
+              <th>Ticket</th>
+              <th>Fecha y Hora</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Tipo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="solicitudes-body">
+            <!-- Datos cargados por JavaScript -->
+          </tbody>
+        </table>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2025 Consorcio Interalumbrado de Cúcuta · Acceso restringido</p>
-    </div>
-  </footer>
+
+      <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 15px;">
+        <h3 style="margin-top: 0; color: #003366;">📝 Instrucciones para el Administrador</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 15px;">
+          <div style="background: white; padding: 20px; border-radius: 10px;">
+            <h4 style="margin-top: 0; color: #0051a2;">📊 Datos en Google Sheets</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Todas las solicitudes se guardan automáticamente</li>
+              <li>Incluyen: Ticket, fecha, nombre, correo, tipo, mensaje</li>
+              <li>Puedes filtrar, ordenar y exportar desde Sheets</li>
+            </ul>
+          </div>
+          <div style="background: white; padding: 20px; border-radius: 10px;">
+            <h4 style="margin-top: 0; color: #0051a2;">📧 Notificaciones por Correo</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Cada solicitud genera correo a la empresa</li>
+              <li>El usuario recibe confirmación automática</li>
+              <li>Los correos incluyen número de ticket</li>
+            </ul>
+          </div>
+          <div style="background: white; padding: 20px; border-radius: 10px;">
+            <h4 style="margin-top: 0; color: #0051a2;">🛠️ Mantenimiento</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Para actualizar contenido del sitio, contactar al desarrollador</li>
+              <li>La contraseña se puede cambiar en el código</li>
+              <li>Backup automático en localStorage del navegador</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 5px solid #ffc107;">
+        <h4 style="margin-top: 0; color: #856404;">⚠️ Información Importante</h4>
+        <p style="margin-bottom: 10px;">Este panel muestra solo las solicitudes guardadas localmente en este navegador.</p>
+        <p>Para ver <strong>todos los datos completos</strong>, utiliza el botón <strong>"Ver en Google Sheets"</strong> arriba.</p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-col">
+          <h4>Panel de Administración v1.0</h4>
+          <p>Consorcio Interalumbrado de Cúcuta</p>
+          <p><small>Sesión activa: <span id="sessionTime">0</span> min</small></p>
+        </div>
+        <div class="footer-col">
+          <h4>Enlaces Rápidos</h4>
+          <p><a href="index.html" style="color: white;">🏠 Sitio Web Principal</a></p>
+          <p><a href="contacto.html" style="color: white;">📝 Formulario de Contacto</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Consorcio Interalumbrado de Cúcuta · Panel de administración · Uso interno</p>
+      </div>
+    </footer>
+  </div>
 
   <script>
-  // Credenciales de acceso (simple)
-  const ADMIN_PASSWORD = "Interalumbrado2025";
+  // ================= CONFIGURACIÓN =================
+  const CONFIG = {
+    // Cambia esta contraseña antes de entregar el proyecto
+    ADMIN_PASSWORD: "Interalumbrado2025",
+    GOOGLE_SHEETS_URL: "https://docs.google.com/spreadsheets/d/1xfq-c7OGWUhAZGR4KFbqSiBlRm1Epos7oLpWJ2dpPKs/edit",
+    SESSION_TIMEOUT: 30 // minutos
+  };
   
-  function verificarAcceso() {
-    const password = prompt("🔐 Ingrese la contraseña de administración:");
-    if (password !== ADMIN_PASSWORD) {
-      alert("Acceso denegado.");
-      window.location.href = "index.html";
-      return false;
+  let sessionStartTime = null;
+  let sessionTimer = null;
+  
+  // ================= FUNCIONES DE LOGIN =================
+  function verificarLogin() {
+    const passwordInput = document.getElementById('adminPassword');
+    const errorDiv = document.getElementById('loginError');
+    const password = passwordInput.value.trim();
+    
+    // Limpiar error anterior
+    errorDiv.classList.add('hidden');
+    
+    if (!password) {
+      mostrarError('Por favor ingresa la contraseña');
+      return;
     }
-    return true;
+    
+    if (password === CONFIG.ADMIN_PASSWORD) {
+      // Login exitoso
+      iniciarSesion();
+    } else {
+      mostrarError('Contraseña incorrecta. Intenta nuevamente.');
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
   }
   
-  if (!verificarAcceso()) {
-    document.body.innerHTML = '<div style="padding: 50px; text-align: center;">Acceso denegado</div>';
+  function mostrarError(mensaje) {
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.textContent = mensaje;
+    errorDiv.classList.remove('hidden');
   }
   
-  // Cargar datos de Google Sheets (versión simplificada)
+  function iniciarSesion() {
+    // Ocultar login, mostrar panel
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    
+    // Guardar sesión en localStorage (por 24 horas)
+    const sessionData = {
+      loggedIn: true,
+      timestamp: new Date().getTime(),
+      expires: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 horas
+    };
+    localStorage.setItem('interalumbrado_admin_session', JSON.stringify(sessionData));
+    
+    // Iniciar timer de sesión
+    sessionStartTime = new Date();
+    actualizarTiempoSesion();
+    sessionTimer = setInterval(actualizarTiempoSesion, 60000); // Actualizar cada minuto
+    
+    // Cargar datos
+    cargarSolicitudes();
+  }
+  
+  function logout() {
+    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+      // Limpiar sesión
+      localStorage.removeItem('interalumbrado_admin_session');
+      clearInterval(sessionTimer);
+      
+      // Mostrar login, ocultar panel
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('adminPanel').classList.add('hidden');
+      
+      // Limpiar campos
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('loginError').classList.add('hidden');
+    }
+  }
+  
+  function actualizarTiempoSesion() {
+    if (!sessionStartTime) return;
+    
+    const ahora = new Date();
+    const diffMs = ahora - sessionStartTime;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    document.getElementById('sessionTime').textContent = diffMins;
+    
+    // Cerrar sesión automáticamente después del tiempo configurado
+    if (diffMins >= CONFIG.SESSION_TIMEOUT) {
+      alert('Sesión expirada por inactividad');
+      logout();
+    }
+  }
+  
+  // ================= FUNCIONES DE DATOS =================
   async function cargarSolicitudes() {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('no-data').style.display = 'none';
+    const loading = document.getElementById('loading');
+    const noData = document.getElementById('no-data');
+    const table = document.getElementById('solicitudes-table');
+    
+    loading.classList.remove('hidden');
+    noData.classList.add('hidden');
+    table.classList.add('hidden');
     
     try {
-      // Nota: Para una versión real necesitarías API de Google Sheets
-      // Esta es una versión de demostración
-      const solicitudes = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+      // Cargar datos de localStorage (backups del formulario)
+      const backups = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+      const fallbacks = JSON.parse(localStorage.getItem('interalumbrado_fallbacks')) || [];
       
-      if (solicitudes.length === 0) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('no-data').style.display = 'block';
+      // Combinar todos los datos locales
+      const todasSolicitudes = [...backups, ...fallbacks];
+      
+      if (todasSolicitudes.length === 0) {
+        loading.classList.add('hidden');
+        noData.classList.remove('hidden');
         return;
       }
       
       // Actualizar estadísticas
-      document.getElementById('total-solicitudes').textContent = solicitudes.length;
-      document.getElementById('solicitudes-hoy').textContent = solicitudes.filter(s => {
-        const hoy = new Date().toDateString();
-        const fechaSolicitud = new Date(s.fecha).toDateString();
-        return hoy === fechaSolicitud;
-      }).length;
-      
-      document.getElementById('reportes').textContent = solicitudes.filter(s => 
-        s.datos.tipo === 'reporte').length;
-      
-      document.getElementById('consultas').textContent = solicitudes.filter(s => 
-        s.datos.tipo === 'consulta').length;
+      actualizarEstadisticas(todasSolicitudes);
       
       // Mostrar tabla
-      const tbody = document.getElementById('solicitudes-body');
-      tbody.innerHTML = '';
+      mostrarTablaSolicitudes(todasSolicitudes);
       
-      solicitudes.slice(-10).reverse().forEach(s => {
-        const fecha = new Date(s.fecha).toLocaleString('es-CO');
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><span class="ticket-badge">${s.ticket || 'N/A'}</span></td>
-          <td>${fecha}</td>
-          <td>${s.datos.nombre || 'Sin nombre'}</td>
-          <td>${s.datos.tipo === 'reporte' ? '🚨 Reporte' : '📝 Consulta'}</td>
-          <td>🟡 Pendiente</td>
-        `;
-        tbody.appendChild(tr);
-      });
-      
-      document.getElementById('loading').style.display = 'none';
+      loading.classList.add('hidden');
+      table.classList.remove('hidden');
       
     } catch (error) {
       console.error('Error cargando datos:', error);
-      document.getElementById('loading').style.display = 'none';
+      loading.classList.add('hidden');
       alert('Error cargando datos. Revisa la consola para más detalles.');
     }
   }
   
-  // Cargar datos al iniciar
-  document.addEventListener('DOMContentLoaded', cargarSolicitudes);
+  function actualizarEstadisticas(solicitudes) {
+    // Total solicitudes
+    document.getElementById('total-solicitudes').textContent = solicitudes.length;
+    
+    // Solicitudes hoy
+    const hoy = new Date().toDateString();
+    const solicitudesHoy = solicitudes.filter(s => {
+      const fechaSolicitud = new Date(s.fecha).toDateString();
+      return hoy === fechaSolicitud;
+    }).length;
+    document.getElementById('solicitudes-hoy').textContent = solicitudesHoy;
+    
+    // Reportes vs consultas
+    const reportes = solicitudes.filter(s => 
+      s.datos && s.datos.tipo === 'reporte').length;
+    const consultas = solicitudes.filter(s => 
+      s.datos && s.datos.tipo === 'consulta').length;
+    
+    document.getElementById('reportes').textContent = reportes;
+    document.getElementById('consultas').textContent = consultas;
+  }
+  
+  function mostrarTablaSolicitudes(solicitudes) {
+    const tbody = document.getElementById('solicitudes-body');
+    tbody.innerHTML = '';
+    
+    // Ordenar por fecha (más reciente primero) y limitar a 15
+    solicitudes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    const ultimasSolicitudes = solicitudes.slice(0, 15);
+    
+    ultimasSolicitudes.forEach((s, index) => {
+      const fecha = new Date(s.fecha).toLocaleString('es-CO');
+      const ticket = s.ticket || (s.datos && s.datos.tipo === 'comentario' ? 'COM-' + index : 'N/A');
+      const nombre = (s.datos && s.datos.nombre) || 'Sin nombre';
+      const correo = (s.datos && s.datos.correo) || 'No proporcionado';
+      const tipo = (s.datos && s.datos.tipo) || 'desconocido';
+      const esFallback = s.error ? true : false;
+      
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="ticket-badge">${ticket}</span></td>
+        <td>${fecha}</td>
+        <td>${nombre}</td>
+        <td><small>${correo}</small></td>
+        <td>
+          ${tipo === 'reporte' ? '🚨 Reporte' : 
+            tipo === 'consulta' ? '📝 Consulta' : 
+            tipo === 'comentario' ? '💬 Comentario' : '❓ ' + tipo}
+          ${esFallback ? '<br><small style="color: #dc3545;">(Error envío)</small>' : ''}
+        </td>
+        <td>
+          <button onclick="verDetalle(${index})" style="padding: 5px 10px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
+            👁️ Ver
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+  
+  function verDetalle(index) {
+    const backups = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+    const fallbacks = JSON.parse(localStorage.getItem('interalumbrado_fallbacks')) || [];
+    const todasSolicitudes = [...backups, ...fallbacks];
+    
+    if (index >= 0 && index < todasSolicitudes.length) {
+      const solicitud = todasSolicitudes[index];
+      const detalles = `
+Ticket: ${solicitud.ticket || 'N/A'}
+Fecha: ${new Date(solicitud.fecha).toLocaleString('es-CO')}
+Nombre: ${solicitud.datos.nombre || 'No proporcionado'}
+Correo: ${solicitud.datos.correo || 'No proporcionado'}
+Tipo: ${solicitud.datos.tipo || 'desconocido'}
+---
+Mensaje:
+${solicitud.datos.mensaje || 'Sin mensaje'}
+---
+${solicitud.error ? `ERROR: ${solicitud.error}` : 'Envío exitoso'}
+${solicitud.local ? '(Guardado localmente)' : ''}
+      `;
+      
+      alert(detalles);
+    }
+  }
+  
+  function exportarDatos() {
+    const backups = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+    const fallbacks = JSON.parse(localStorage.getItem('interalumbrado_fallbacks')) || [];
+    const todasSolicitudes = [...backups, ...fallbacks];
+    
+    if (todasSolicitudes.length === 0) {
+      alert('No hay datos para exportar');
+      return;
+    }
+    
+    // Crear CSV
+    let csv = 'Ticket,Fecha,Nombre,Correo,Tipo,Mensaje,Estado\n';
+    
+    todasSolicitudes.forEach(s => {
+      const ticket = s.ticket || 'N/A';
+      const fecha = new Date(s.fecha).toLocaleString('es-CO');
+      const nombre = (s.datos.nombre || '').replace(/"/g, '""');
+      const correo = s.datos.correo || '';
+      const tipo = s.datos.tipo || '';
+      const mensaje = (s.datos.mensaje || '').replace(/"/g, '""').replace(/\n/g, ' ');
+      const estado = s.error ? 'Error' : 'Exitoso';
+      
+      csv += `"${ticket}","${fecha}","${nombre}","${correo}","${tipo}","${mensaje}","${estado}"\n`;
+    });
+    
+    // Descargar archivo
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `solicitudes_interalumbrado_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    alert(`Exportados ${todasSolicitudes.length} registros`);
+  }
+  
+  // ================= INICIALIZACIÓN =================
+  document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si ya hay sesión activa
+    const sessionData = localStorage.getItem('interalumbrado_admin_session');
+    if (sessionData) {
+      try {
+        const session = JSON.parse(sessionData);
+        const ahora = new Date().getTime();
+        
+        if (session.loggedIn && ahora < session.expires) {
+          // Sesión válida, iniciar automáticamente
+          iniciarSesion();
+        } else {
+          // Sesión expirada, limpiar
+          localStorage.removeItem('interalumbrado_admin_session');
+        }
+      } catch (e) {
+        console.error('Error recuperando sesión:', e);
+        localStorage.removeItem('interalumbrado_admin_session');
+      }
+    }
+    
+    // Permitir login con Enter
+    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        verificarLogin();
+      }
+    });
+  });
   </script>
   
   <script src="js/main.js" defer></script>
