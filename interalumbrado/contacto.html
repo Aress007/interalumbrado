@@ -43,35 +43,85 @@
     <section class="card">
       <h2>Formulario de contacto</h2>
       <p>Usa el formulario a continuación para enviar mensajes que llegarán al correo institucional. Si necesitas
-        adjuntar archivos, haz clic en el botón "Adjuntar documento" y seras dirígio al formulario.</p>
+        adjuntar archivos, haz clic en el botón "Adjuntar documento" y serás dirigido al formulario.</p>
 
-      <!-- Formspree: envío a correo -->
-      <form action="https://formspree.io/f/xnnbyrdk" method="POST" class="form-contact">
+      <!-- API de Google Apps Script -->
+      <form id="formContacto" class="form-contact">
         <div class="form-row">
-          <input type="text" name="nombre" placeholder="Tu nombre" required>
-          <input type="email" name="correo" placeholder="Tu correo" required>
+          <input type="text" name="nombre" id="nombreContacto" placeholder="Tu nombre completo" required>
+          <input type="email" name="correo" id="correoContacto" placeholder="tu@correo.com" required>
         </div>
-        <textarea name="mensaje" rows="5" placeholder="Mensaje" required></textarea>
+        
+        <div class="form-row">
+          <label for="tipoSolicitud" style="margin-bottom: 5px; display: block; font-weight: 600;">
+            Tipo de solicitud:
+          </label>
+          <select id="tipoSolicitud" name="tipo" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d9d9d9;">
+            <option value="consulta">📝 Consulta general</option>
+            <option value="reporte">🚨 Reporte de avería</option>
+            <option value="sugerencia">💡 Sugerencia o mejora</option>
+            <option value="otro">🔍 Otro tipo</option>
+          </select>
+        </div>
+        
+        <textarea name="mensaje" id="mensajeContacto" rows="6" placeholder="Describe tu solicitud con detalles (ubicación, número de luminaria, problema observado, etc.)" required></textarea>
 
         <div class="form-actions">
-          <button type="submit" class="btn-primary">Enviar mensaje</button>
+          <button type="submit" class="btn-primary" id="btnEnviarContacto">
+            <span id="btnTexto">📤 Enviar solicitud</span>
+            <span id="btnLoading" style="display:none;">⏳ Procesando...</span>
+          </button>
           <a class="btn-formulario"
             href="https://docs.google.com/forms/d/e/1FAIpQLSfY6P-3VbxNWVHQUOF8c8jIrH7_qv27Ec9-nJIYVOlv8JOT5A/viewform"
-            target="_blank" rel="noopener">Adjuntar documento</a>
-          <a class="btn-whatsapp" href="https://wa.me/573164883530" target="_blank" rel="noopener">
-            <i class="fab fa-whatsapp"></i>
+            target="_blank" rel="noopener" style="background: #4285f4;">
+            📎 Adjuntar documentos
           </a>
+          <a class="btn-whatsapp" href="https://wa.me/573164883530" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+          </a>
+        </div>
+        
+        <!-- Mensajes de estado -->
+        <div id="mensajeExito" style="display:none; margin-top: 20px; padding: 15px; background: #d4edda; color: #155724; border-radius: 8px; border-left: 4px solid #28a745;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 24px;">✅</div>
+            <div>
+              <strong style="font-size: 1.1em;">Solicitud enviada exitosamente</strong><br>
+              <span id="numeroTicket" style="color: #003366; font-weight: bold;"></span><br>
+              <small>Hemos recibido tu solicitud y te contactaremos pronto. Guarda el número de ticket para referencia.</small>
+            </div>
+          </div>
+        </div>
+        
+        <div id="mensajeError" style="display:none; margin-top: 20px; padding: 15px; background: #f8d7da; color: #721c24; border-radius: 8px; border-left: 4px solid #dc3545;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 24px;">❌</div>
+            <div>
+              <strong>Error al enviar la solicitud</strong><br>
+              <span id="errorDetalle">Por favor, intenta de nuevo o contacta por WhatsApp.</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 15px; font-size: 0.9rem; color: #666; text-align: center;">
+          <p>⚠️ <strong>Para reportes de emergencia</strong> usa el botón de WhatsApp</p>
         </div>
       </form>
     </section>
 
-    </form>
     <section class="card">
       <h2>Información de contacto</h2>
       <p>Avenida 0A No. 12-05 · Edificio Ingrid - Oficina 207<br>
         Email: <a href="mailto:consorcio.cucuta@gmail.com">consorcio.cucuta@gmail.com</a><br>
         San José de Cúcuta - N. de S.<br>
         Tel: (7) 549 0891 · Cel: +57 314 237 1133</p>
+        
+      <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366;">
+        <h3 style="margin-top: 0; color: #003366;">⏰ Horarios de atención:</h3>
+        <ul style="margin-bottom: 0;">
+          <li><strong>Lunes a Viernes:</strong> 8:00 AM - 12:00 PM / 2:00 PM - 6:00 PM</li>
+        </ul>
+      </div>
     </section>
   </main>
 
@@ -90,8 +140,168 @@
     </div>
   </footer>
 
+  <!-- Scripts originales -->
   <script src="js/main.js" defer></script>
   <script src="js/menu-activo.js" defer></script>
+  
+  <!-- Script para el formulario de contacto -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formContacto');
+    const btnEnviar = document.getElementById('btnEnviarContacto');
+    const btnTexto = document.getElementById('btnTexto');
+    const btnLoading = document.getElementById('btnLoading');
+    const mensajeExito = document.getElementById('mensajeExito');
+    const mensajeError = document.getElementById('mensajeError');
+    const numeroTicket = document.getElementById('numeroTicket');
+    const errorDetalle = document.getElementById('errorDetalle');
+    
+    if (!form) return;
+    
+    // URL de tu API (LA QUE FUNCIONÓ)
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzjLNSm0jF8PQVhMayX-hoZZLrzP3jGrqe-xzqJL1v_CaGCzxtiKZDOWz3kXOUSHd4/exec';
+    
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Validación
+      const nombre = document.getElementById('nombreContacto').value.trim();
+      const correo = document.getElementById('correoContacto').value.trim();
+      const mensaje = document.getElementById('mensajeContacto').value.trim();
+      const tipo = document.getElementById('tipoSolicitud').value;
+      
+      if (!nombre || !correo || !mensaje) {
+        mostrarError('Por favor completa todos los campos obligatorios.');
+        return;
+      }
+      
+      if (!correo.includes('@') || !correo.includes('.')) {
+        mostrarError('Por favor ingresa un correo electrónico válido.');
+        return;
+      }
+      
+      // Mostrar loading
+      btnTexto.style.display = 'none';
+      btnLoading.style.display = 'inline';
+      btnEnviar.disabled = true;
+      btnEnviar.style.opacity = '0.7';
+      
+      // Ocultar mensajes anteriores
+      mensajeExito.style.display = 'none';
+      mensajeError.style.display = 'none';
+      
+      // Preparar datos
+      const datos = {
+        nombre: nombre,
+        correo: correo,
+        tipo: tipo,
+        mensaje: `Tipo: ${tipo}\n\n${mensaje}`,
+        fecha: new Date().toISOString(),
+        pagina: 'contacto',
+        ip: 'N/A'
+      };
+      
+      try {
+        // Enviar a la API
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos)
+        });
+        
+        // Éxito - mostrar mensaje
+        setTimeout(() => {
+          // Generar número de ticket local (coherente con API)
+          const fecha = new Date();
+          const ticket = 'INT-' + fecha.getFullYear() + 
+                        (fecha.getMonth()+1).toString().padStart(2,'0') + 
+                        fecha.getDate().toString().padStart(2,'0') + 
+                        '-' + Math.floor(Math.random() * 1000).toString().padStart(3,'0');
+          
+          numeroTicket.textContent = `Ticket #${ticket}`;
+          mensajeExito.style.display = 'block';
+          
+          // Limpiar formulario (excepto tipo)
+          document.getElementById('nombreContacto').value = '';
+          document.getElementById('correoContacto').value = '';
+          document.getElementById('mensajeContacto').value = '';
+          
+          // Restaurar botón
+          btnTexto.style.display = 'inline';
+          btnLoading.style.display = 'none';
+          btnEnviar.disabled = false;
+          btnEnviar.style.opacity = '1';
+          
+          // Scroll al mensaje de éxito
+          mensajeExito.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Guardar en localStorage como backup
+          const backup = {
+            ticket: ticket,
+            datos: datos,
+            fecha: new Date().toISOString(),
+            local: true
+          };
+          
+          let backups = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+          backups.push(backup);
+          localStorage.setItem('interalumbrado_backups', JSON.stringify(backups.slice(-20)));
+          
+          // Opcional: Mostrar en consola
+          console.log('Solicitud guardada:', backup);
+          
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        
+        // Error - mostrar mensaje
+        errorDetalle.textContent = 'Error de conexión. Por favor, intenta nuevamente o usa WhatsApp.';
+        mensajeError.style.display = 'block';
+        
+        // Restaurar botón
+        btnTexto.style.display = 'inline';
+        btnLoading.style.display = 'none';
+        btnEnviar.disabled = false;
+        btnEnviar.style.opacity = '1';
+        
+        // Guardar en localStorage como fallback
+        const fallback = {
+          error: error.toString(),
+          datos: datos,
+          fecha: new Date().toISOString(),
+          local: true
+        };
+        
+        let fallbacks = JSON.parse(localStorage.getItem('interalumbrado_fallbacks')) || [];
+        fallbacks.push(fallback);
+        localStorage.setItem('interalumbrado_fallbacks', JSON.stringify(fallbacks));
+        
+        // Scroll al error
+        mensajeError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+    
+    function mostrarError(mensaje) {
+      errorDetalle.textContent = mensaje;
+      mensajeError.style.display = 'block';
+      mensajeError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Ocultar después de 5 segundos
+      setTimeout(() => {
+        mensajeError.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Verificar backups existentes
+    const backups = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+    if (backups.length > 0) {
+      console.log(`Hay ${backups.length} solicitudes guardadas localmente`);
+    }
+  });
+  </script>
 </body>
-
 </html>

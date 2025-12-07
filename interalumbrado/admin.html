@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel Admin - Interalumbrado</title>
+  <link rel="stylesheet" href="style/style.css">
+  <style>
+    .admin-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .admin-header { background: #003366; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+    .stat-number { font-size: 2rem; font-weight: bold; color: #003366; }
+    #solicitudes-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    #solicitudes-table th { background: #003366; color: white; padding: 12px; text-align: left; }
+    #solicitudes-table td { padding: 10px; border-bottom: 1px solid #ddd; }
+    .ticket-badge { background: #0051a2; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.9rem; }
+    .btn-refresh { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="img/Logo.jpg" alt="Logo" class="logo">
+        <div class="brand-text">
+          <h1>Panel de Administración</h1>
+          <p class="tagline">Consorcio Interalumbrado de Cúcuta</p>
+        </div>
+      </div>
+      <button id="menu-toggle" class="hamburguesa">☰</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+    <div class="admin-header">
+      <h2>📊 Dashboard de Solicitudes</h2>
+      <p>Visualización de solicitudes recibidas a través del formulario web</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="total-solicitudes">0</div>
+        <div>Total Solicitudes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="solicitudes-hoy">0</div>
+        <div>Solicitudes Hoy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="reportes">0</div>
+        <div>Reportes de Avería</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="consultas">0</div>
+        <div>Consultas</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <button class="btn-refresh" onclick="cargarSolicitudes()">
+        🔄 Actualizar Datos
+      </button>
+      <a href="https://docs.google.com/spreadsheets/d/1xfq-c7OGWUhAZGR4KFbqSiBlRm1Epos7oLpWJ2dpPKs/edit" 
+         target="_blank" 
+         style="margin-left: 10px; padding: 10px 15px; background: #4285f4; color: white; text-decoration: none; border-radius: 5px;">
+        📊 Ver en Google Sheets
+      </a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <h3>📋 Últimas Solicitudes</h3>
+      <table id="solicitudes-table">
+        <thead>
+          <tr>
+            <th>Ticket</th>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="solicitudes-body">
+          <!-- Datos cargados por JavaScript -->
+        </tbody>
+      </table>
+      <div id="loading" style="text-align: center; padding: 20px;">
+        ⏳ Cargando datos...
+      </div>
+      <div id="no-data" style="display: none; text-align: center; padding: 20px; color: #666;">
+        No hay solicitudes registradas aún.
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+      <h3>📝 Instrucciones para el administrador:</h3>
+      <ul>
+        <li>Las solicitudes se guardan automáticamente en <a href="https://docs.google.com/spreadsheets/d/1xfq-c7OGWUhAZGR4KFbqSiBlRm1Epos7oLpWJ2dpPKs/edit" target="_blank">Google Sheets</a></li>
+        <li>Cada solicitud genera un correo a: <strong>consorcio.cucuta@gmail.com</strong></li>
+        <li>Usa el botón "Actualizar Datos" para ver nuevas solicitudes</li>
+        <li>Para editar contenido del sitio, contactar al desarrollador</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Panel de Administración</h4>
+        <p>Versión 1.0 · Solo para uso interno</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Consorcio Interalumbrado de Cúcuta · Acceso restringido</p>
+    </div>
+  </footer>
+
+  <script>
+  // Credenciales de acceso (simple)
+  const ADMIN_PASSWORD = "Interalumbrado2025";
+  
+  function verificarAcceso() {
+    const password = prompt("🔐 Ingrese la contraseña de administración:");
+    if (password !== ADMIN_PASSWORD) {
+      alert("Acceso denegado.");
+      window.location.href = "index.html";
+      return false;
+    }
+    return true;
+  }
+  
+  if (!verificarAcceso()) {
+    document.body.innerHTML = '<div style="padding: 50px; text-align: center;">Acceso denegado</div>';
+  }
+  
+  // Cargar datos de Google Sheets (versión simplificada)
+  async function cargarSolicitudes() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('no-data').style.display = 'none';
+    
+    try {
+      // Nota: Para una versión real necesitarías API de Google Sheets
+      // Esta es una versión de demostración
+      const solicitudes = JSON.parse(localStorage.getItem('interalumbrado_backups')) || [];
+      
+      if (solicitudes.length === 0) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('no-data').style.display = 'block';
+        return;
+      }
+      
+      // Actualizar estadísticas
+      document.getElementById('total-solicitudes').textContent = solicitudes.length;
+      document.getElementById('solicitudes-hoy').textContent = solicitudes.filter(s => {
+        const hoy = new Date().toDateString();
+        const fechaSolicitud = new Date(s.fecha).toDateString();
+        return hoy === fechaSolicitud;
+      }).length;
+      
+      document.getElementById('reportes').textContent = solicitudes.filter(s => 
+        s.datos.tipo === 'reporte').length;
+      
+      document.getElementById('consultas').textContent = solicitudes.filter(s => 
+        s.datos.tipo === 'consulta').length;
+      
+      // Mostrar tabla
+      const tbody = document.getElementById('solicitudes-body');
+      tbody.innerHTML = '';
+      
+      solicitudes.slice(-10).reverse().forEach(s => {
+        const fecha = new Date(s.fecha).toLocaleString('es-CO');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="ticket-badge">${s.ticket || 'N/A'}</span></td>
+          <td>${fecha}</td>
+          <td>${s.datos.nombre || 'Sin nombre'}</td>
+          <td>${s.datos.tipo === 'reporte' ? '🚨 Reporte' : '📝 Consulta'}</td>
+          <td>🟡 Pendiente</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      document.getElementById('loading').style.display = 'none';
+      
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+      document.getElementById('loading').style.display = 'none';
+      alert('Error cargando datos. Revisa la consola para más detalles.');
+    }
+  }
+  
+  // Cargar datos al iniciar
+  document.addEventListener('DOMContentLoaded', cargarSolicitudes);
+  </script>
+  
+  <script src="js/main.js" defer></script>
+</body>
+</html>

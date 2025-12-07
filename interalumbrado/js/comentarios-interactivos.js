@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function escapeHtml(s) {
     if (!s) return '';
-    return s.replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; });
+    return s.replace(/[&<>"']/g, function (m) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" })[m]; });
   }
 
   function render() {
@@ -62,21 +62,59 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('comentarios', JSON.stringify(comentarios));
     render();
 
-    // Enviar a Formspree (no bloquea guardado local)
-    fetch(form.action, {
+    // Enviar a nuestra API de Google Apps Script
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzjLNSm0jF8PQVhMayX-hoZZLrzP3jGrqe-xzqJL1v_CaGCzxtiKZDOWz3kXOUSHd4/exec';
+
+    // Preparar datos para la API
+    const datosComentario = {
+      nombre: nombre,
+      correo: correo || 'no-proporcionado@interalumbrado.com',
+      tipo: 'comentario',
+      mensaje: `Calificación: ${calificacion} estrellas\n\nComentario: ${comentario}`,
+      calificacion: calificacion,
+      fecha: new Date().toISOString(),
+      pagina: 'index-comentarios'
+    };
+
+    // Mostrar indicador de carga
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Enviando...';
+    submitBtn.disabled = true;
+
+    // Enviar a la API
+    fetch(API_URL, {
       method: 'POST',
-      body: new FormData(form),
-      headers: { Accept: 'application/json' }
-    }).then(res => {
-      if (res.ok) {
-        alert('Comentario enviado y guardado. Gracias.');
-        form.reset(); // limpia el formulario
-      } else {
-        alert('El comentario fue guardado localmente, pero hubo un problema al enviar al correo.');
-      }
-    }).catch(err => {
-      console.error('Error envío Formspree:', err);
-      alert('Error de conexión. Comentario guardado localmente.');
-    });
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(datosComentario)
+    })
+      .then(() => {
+        // Generar número de ticket simulado
+        const fecha = new Date();
+        const ticketNum = 'COM-' + fecha.getFullYear() +
+          (fecha.getMonth() + 1).toString().padStart(2, '0') +
+          fecha.getDate().toString().padStart(2, '0') +
+          '-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+        // Restaurar botón
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+
+        // Mostrar mensaje mejorado
+        alert(`✅ Comentario guardado y enviado\n\nTicket: ${ticketNum}\n\n¡Gracias por tu opinión! Tu comentario ayuda a mejorar nuestro servicio.`);
+        form.reset();
+      })
+      .catch(err => {
+        console.error('Error envío API:', err);
+
+        // Restaurar botón
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+
+        alert('✅ Comentario guardado localmente\n\nHubo un problema al enviar la notificación, pero tu comentario está guardado en esta página.');
+      });
   });
 });
